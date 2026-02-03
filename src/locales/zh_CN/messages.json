@@ -371,6 +371,14 @@
     "message": "公式复制格式",
     "description": "公式复制格式设置标签"
   },
+  "formulaCopyEnabled": {
+    "message": "启用公式点击复制",
+    "description": "公式点击复制功能开关"
+  },
+  "formulaCopyEnabledHint": {
+    "message": "点击公式即可复制到剪贴板",
+    "description": "公式点击复制提示"
+  },
   "formulaCopyFormatLatex": {
     "message": "LaTeX",
     "description": "LaTeX 格式选项"
