@@ -371,6 +371,14 @@
     "message": "数式コピー形式",
     "description": "Formula copy format setting label"
   },
+  "formulaCopyEnabled": {
+    "message": "数式クリックコピーを有効にする",
+    "description": "Toggle formula click copy feature"
+  },
+  "formulaCopyEnabledHint": {
+    "message": "数式をクリックしてクリップボードにコピーします",
+    "description": "Formula click-to-copy hint"
+  },
   "formulaCopyFormatLatex": {
     "message": "LaTeX",
     "description": "LaTeX format option"

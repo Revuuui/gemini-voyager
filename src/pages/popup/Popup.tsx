@@ -117,6 +117,7 @@ interface SettingsUpdate {
   mermaidEnabled?: boolean;
   quoteReplyEnabled?: boolean;
   ctrlEnterSendEnabled?: boolean;
+  formulaCopyEnabled?: boolean;
 }
 
 export default function Popup() {
@@ -134,6 +135,7 @@ export default function Popup() {
   const [formulaCopyFormat, setFormulaCopyFormat] = useState<'latex' | 'unicodemath' | 'no-dollar'>(
     'latex',
   );
+  const [formulaCopyEnabled, setFormulaCopyEnabled] = useState<boolean>(true);
   const [extVersion, setExtVersion] = useState<string | null>(null);
   const [latestVersion, setLatestVersion] = useState<string | null>(null);
   const [watermarkRemoverEnabled, setWatermarkRemoverEnabled] = useState<boolean>(true);
@@ -202,6 +204,8 @@ export default function Popup() {
         payload.gvQuoteReplyEnabled = settings.quoteReplyEnabled;
       if (typeof settings.ctrlEnterSendEnabled === 'boolean')
         payload.gvCtrlEnterSend = settings.ctrlEnterSendEnabled;
+      if (typeof settings.formulaCopyEnabled === 'boolean')
+        payload.gvFormulaCopyEnabled = settings.formulaCopyEnabled;
       void setSyncStorage(payload);
     },
     [setSyncStorage],
@@ -360,6 +364,7 @@ export default function Popup() {
           geminiFolderHideArchivedConversations: false,
           gvPromptCustomWebsites: [],
           gvFormulaCopyFormat: 'latex',
+          gvFormulaCopyEnabled: true,
           geminiWatermarkRemoverEnabled: true,
           gvHidePromptManager: false,
           gvInputCollapseEnabled: false,
@@ -374,6 +379,7 @@ export default function Popup() {
           const format = res?.gvFormulaCopyFormat as 'latex' | 'unicodemath' | 'no-dollar';
           if (format === 'latex' || format === 'unicodemath' || format === 'no-dollar')
             setFormulaCopyFormat(format);
+          setFormulaCopyEnabled(res?.gvFormulaCopyEnabled !== false);
           setHideContainer(!!res?.geminiTimelineHideContainer);
           setDraggableTimeline(!!res?.geminiTimelineDraggable);
           setMarkerLevelEnabled(!!res?.geminiTimelineMarkerLevel);
@@ -892,6 +898,20 @@ export default function Popup() {
         <Card className="p-4 transition-shadow hover:shadow-lg">
           <CardTitle className="mb-4 text-xs uppercase">{t('formulaCopyFormat')}</CardTitle>
           <CardContent className="space-y-3 p-0">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <Label htmlFor="formula-copy-enabled">{t('formulaCopyEnabled')}</Label>
+                <p className="text-muted-foreground text-xs">{t('formulaCopyEnabledHint')}</p>
+              </div>
+              <Switch
+                id="formula-copy-enabled"
+                checked={formulaCopyEnabled}
+                onCheckedChange={(checked) => {
+                  setFormulaCopyEnabled(checked);
+                  apply({ formulaCopyEnabled: checked });
+                }}
+              />
+            </div>
             <p className="text-muted-foreground mb-3 text-xs">{t('formulaCopyFormatHint')}</p>
             <div className="space-y-2">
               <label className="flex cursor-pointer items-center space-x-3">

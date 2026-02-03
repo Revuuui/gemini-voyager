@@ -35,6 +35,7 @@ export class FormulaCopyService {
   private readonly logger: ILogger;
   private readonly config: Required<Omit<FormulaCopyConfig, 'format'>>;
   private currentFormat: FormulaCopyFormat = 'latex';
+  private isEnabled = true;
 
   // Storage change listener, extracted so it can be removed on destroy
   private readonly handleStorageChange: Parameters<
@@ -46,6 +47,10 @@ export class FormulaCopyService {
         this.currentFormat = newFormat;
         this.logger.debug('Formula format changed', { format: newFormat });
       }
+    }
+
+    if (areaName === 'sync' && changes[StorageKeys.FORMULA_COPY_ENABLED]) {
+      this.updateEnabledState(changes[StorageKeys.FORMULA_COPY_ENABLED].newValue !== false);
     }
   };
 
@@ -62,7 +67,9 @@ export class FormulaCopyService {
     };
     this.currentFormat = config.format ?? 'latex';
     this.loadI18nMessages();
+    browser.storage.onChanged.addListener(this.handleStorageChange);
     this.loadFormatPreference();
+    this.loadEnabledPreference();
   }
 
   /**
@@ -108,8 +115,22 @@ export class FormulaCopyService {
       this.logger.warn('Failed to load format preference, using default', { error });
     }
 
-    // Listen for format changes
-    browser.storage.onChanged.addListener(this.handleStorageChange);
+  }
+
+  /**
+   * Load enabled preference from storage
+   */
+  private async loadEnabledPreference(): Promise<void> {
+    try {
+      const result = await browser.storage.sync.get({ [StorageKeys.FORMULA_COPY_ENABLED]: true });
+      const enabled = result[StorageKeys.FORMULA_COPY_ENABLED] !== false;
+      this.updateEnabledState(enabled);
+      this.logger.debug('Loaded formula copy enabled preference', { enabled });
+    } catch (error) {
+      this.logger.warn('Failed to load formula copy enabled preference, using default', {
+        error,
+      });
+    }
   }
 
   /**
@@ -121,7 +142,9 @@ export class FormulaCopyService {
       return;
     }
 
-    document.addEventListener('click', this.handleClick, true);
+    if (this.isEnabled) {
+      document.addEventListener('click', this.handleClick, true);
+    }
     this.isInitialized = true;
     this.logger.info('Formula copy service initialized');
   }
@@ -154,6 +177,10 @@ export class FormulaCopyService {
   private handleClick = (event: MouseEvent): void => {
     const target = event.target as HTMLElement;
     const mathElement = this.findMathElement(target);
+
+    if (!this.isEnabled) {
+      return;
+    }
 
     if (!mathElement) {
       return;
@@ -590,6 +617,28 @@ export class FormulaCopyService {
    */
   public isServiceInitialized(): boolean {
     return this.isInitialized;
+  }
+
+  private updateEnabledState(enabled: boolean): void {
+    if (enabled === this.isEnabled) {
+      return;
+    }
+
+    this.isEnabled = enabled;
+
+    if (!this.isInitialized) {
+      return;
+    }
+
+    if (this.isEnabled) {
+      document.addEventListener('click', this.handleClick, true);
+      this.logger.info('Formula copy enabled');
+      return;
+    }
+
+    document.removeEventListener('click', this.handleClick, true);
+    this.removeCopyToast();
+    this.logger.info('Formula copy disabled');
   }
 }
 
