@@ -331,6 +331,14 @@
     "message": "公式複製格式",
     "description": "公式複製格式設定標籤"
   },
+  "formulaCopyEnabled": {
+    "message": "啟用公式點擊複製",
+    "description": "公式點擊複製功能開關"
+  },
+  "formulaCopyEnabledHint": {
+    "message": "點擊公式即可複製到剪貼簿",
+    "description": "公式點擊複製提示"
+  },
   "formulaCopyFormatLatex": {
     "message": "LaTeX",
     "description": "LaTeX 格式選項"

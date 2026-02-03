@@ -1,5 +1,6 @@
 import temml from 'temml';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import browser from 'webextension-polyfill';
 
 import { FormulaCopyService } from './FormulaCopyService';
 
@@ -290,5 +291,45 @@ describe('FormulaCopyService', () => {
     expect(writeTextMock).toHaveBeenCalledWith('$x^2$');
 
     document.body.removeChild(container);
+  });
+
+  it('should skip copying when disabled and resume when enabled', async () => {
+    vi.mocked(browser.storage.sync.get).mockResolvedValue({
+      gvFormulaCopyEnabled: false,
+    });
+
+    resetSingleton();
+    service = FormulaCopyService.getInstance({ format: 'latex' });
+
+    const mathElement = document.createElement('span');
+    mathElement.setAttribute('data-math', 'x^2');
+    document.body.appendChild(mathElement);
+
+    service.initialize();
+    await Promise.resolve();
+
+    mathElement.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await Promise.resolve();
+
+    expect(writeMock).not.toHaveBeenCalled();
+
+    const changeListener = vi.mocked(browser.storage.onChanged.addListener).mock.calls[0]?.[0];
+    if (changeListener) {
+      changeListener(
+        {
+          gvFormulaCopyEnabled: {
+            newValue: true,
+          },
+        },
+        'sync',
+      );
+    }
+
+    mathElement.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await Promise.resolve();
+
+    expect(writeMock).toHaveBeenCalled();
+
+    document.body.removeChild(mathElement);
   });
 });
