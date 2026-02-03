@@ -67,6 +67,7 @@ export class FormulaCopyService {
     };
     this.currentFormat = config.format ?? 'latex';
     this.loadI18nMessages();
+    browser.storage.onChanged.addListener(this.handleStorageChange);
     this.loadFormatPreference();
     this.loadEnabledPreference();
   }
@@ -114,8 +115,22 @@ export class FormulaCopyService {
       this.logger.warn('Failed to load format preference, using default', { error });
     }
 
-    // Listen for format changes
-    browser.storage.onChanged.addListener(this.handleStorageChange);
+  }
+
+  /**
+   * Load enabled preference from storage
+   */
+  private async loadEnabledPreference(): Promise<void> {
+    try {
+      const result = await browser.storage.sync.get({ [StorageKeys.FORMULA_COPY_ENABLED]: true });
+      const enabled = result[StorageKeys.FORMULA_COPY_ENABLED] !== false;
+      this.updateEnabledState(enabled);
+      this.logger.debug('Loaded formula copy enabled preference', { enabled });
+    } catch (error) {
+      this.logger.warn('Failed to load formula copy enabled preference, using default', {
+        error,
+      });
+    }
   }
 
   /**
