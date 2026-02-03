@@ -68,7 +68,8 @@ export class FormulaCopyService {
     this.currentFormat = config.format ?? 'latex';
     this.loadI18nMessages();
     browser.storage.onChanged.addListener(this.handleStorageChange);
-    this.loadPreferences();
+    this.loadFormatPreference();
+    this.loadEnabledPreference();
   }
 
   /**
@@ -118,6 +119,38 @@ export class FormulaCopyService {
       this.logger.debug('Loaded formula copy enabled preference', { enabled });
     } catch (error) {
       this.logger.warn('Failed to load formula copy preferences, using defaults', { error });
+    }
+
+  }
+
+  /**
+   * Load enabled preference from storage
+   */
+  private async loadEnabledPreference(): Promise<void> {
+    try {
+      const result = await browser.storage.sync.get({ [StorageKeys.FORMULA_COPY_ENABLED]: true });
+      const enabled = result[StorageKeys.FORMULA_COPY_ENABLED] !== false;
+      this.updateEnabledState(enabled);
+      this.logger.debug('Loaded formula copy enabled preference', { enabled });
+    } catch (error) {
+      this.logger.warn('Failed to load formula copy enabled preference, using default', {
+        error,
+      });
+    }
+  }
+
+  /**
+   * Load enabled preference from storage
+   */
+  private async loadEnabledPreference(): Promise<void> {
+    try {
+      const result = await browser.storage.sync.get({ [StorageKeys.FORMULA_COPY_ENABLED]: true });
+      this.isEnabled = result[StorageKeys.FORMULA_COPY_ENABLED] !== false;
+      this.logger.debug('Loaded formula copy enabled preference', { enabled: this.isEnabled });
+    } catch (error) {
+      this.logger.warn('Failed to load formula copy enabled preference, using default', {
+        error,
+      });
     }
   }
 
