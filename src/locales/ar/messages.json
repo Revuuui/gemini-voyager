@@ -371,6 +371,14 @@
     "message": "تنسيق نسخ الصيغة",
     "description": "Formula copy format setting label"
   },
+  "formulaCopyEnabled": {
+    "message": "تمكين نسخ المعادلات بالنقر",
+    "description": "Toggle formula click copy feature"
+  },
+  "formulaCopyEnabledHint": {
+    "message": "انقر على المعادلة لنسخها إلى الحافظة",
+    "description": "Formula click-to-copy hint"
+  },
   "formulaCopyFormatLatex": {
     "message": "LaTeX",
     "description": "LaTeX format option"

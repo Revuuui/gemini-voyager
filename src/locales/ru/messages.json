@@ -371,6 +371,14 @@
     "message": "Формат копирования формулы",
     "description": "Formula copy format setting label"
   },
+  "formulaCopyEnabled": {
+    "message": "Включить копирование формул по клику",
+    "description": "Toggle formula click copy feature"
+  },
+  "formulaCopyEnabledHint": {
+    "message": "Нажмите на формулу, чтобы скопировать в буфер обмена",
+    "description": "Formula click-to-copy hint"
+  },
   "formulaCopyFormatLatex": {
     "message": "LaTeX",
     "description": "LaTeX format option"

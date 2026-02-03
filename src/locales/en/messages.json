@@ -371,6 +371,14 @@
     "message": "Formula copy format",
     "description": "Formula copy format setting label"
   },
+  "formulaCopyEnabled": {
+    "message": "Enable formula click-to-copy",
+    "description": "Toggle formula click copy feature"
+  },
+  "formulaCopyEnabledHint": {
+    "message": "Click a formula to copy it to the clipboard",
+    "description": "Formula click-to-copy hint"
+  },
   "formulaCopyFormatLatex": {
     "message": "LaTeX",
     "description": "LaTeX format option"
